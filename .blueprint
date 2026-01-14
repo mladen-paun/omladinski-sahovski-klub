@@ -1,0 +1,53 @@
+created:
+    - app/Http/Controllers/KategorijaController.php
+    - app/Http/Controllers/ClanController.php
+    - app/Http/Controllers/TrenerController.php
+    - app/Http/Controllers/LekcijaController.php
+    - database/factories/KategorijaFactory.php
+    - database/factories/ClanFactory.php
+    - database/factories/TrenerFactory.php
+    - database/factories/LekcijaFactory.php
+    - database/migrations/2026_01_14_144345_create_kategorijas_table.php
+    - database/migrations/2026_01_14_144346_create_clans_table.php
+    - database/migrations/2026_01_14_144347_create_treners_table.php
+    - database/migrations/2026_01_14_144348_create_lekcijas_table.php
+    - app/Models/Kategorija.php
+    - app/Models/Clan.php
+    - app/Models/Trener.php
+    - app/Models/Lekcija.php
+    - tests/Feature/Http/Controllers/KategorijaControllerTest.php
+    - tests/Feature/Http/Controllers/ClanControllerTest.php
+    - tests/Feature/Http/Controllers/TrenerControllerTest.php
+    - tests/Feature/Http/Controllers/LekcijaControllerTest.php
+    - app/Http/Requests/KategorijaStoreRequest.php
+    - app/Http/Requests/KategorijaUpdateRequest.php
+    - app/Http/Requests/ClanStoreRequest.php
+    - app/Http/Requests/ClanUpdateRequest.php
+    - app/Http/Requests/TrenerStoreRequest.php
+    - app/Http/Requests/TrenerUpdateRequest.php
+    - app/Http/Requests/LekcijaStoreRequest.php
+    - app/Http/Requests/LekcijaUpdateRequest.php
+    - resources/views/kategorija/index.blade.php
+    - resources/views/kategorija/create.blade.php
+    - resources/views/kategorija/show.blade.php
+    - resources/views/kategorija/edit.blade.php
+    - resources/views/clan/index.blade.php
+    - resources/views/clan/create.blade.php
+    - resources/views/clan/show.blade.php
+    - resources/views/clan/edit.blade.php
+    - resources/views/trener/index.blade.php
+    - resources/views/trener/create.blade.php
+    - resources/views/trener/show.blade.php
+    - resources/views/trener/edit.blade.php
+    - resources/views/lekcija/index.blade.php
+    - resources/views/lekcija/create.blade.php
+    - resources/views/lekcija/show.blade.php
+    - resources/views/lekcija/edit.blade.php
+updated:
+    - routes/web.php
+models:
+    User: { name: string, email: string, email_verified_at: 'timestamp nullable default:NULL', password: string, remember_token: 'string:100 nullable default:NULL' }
+    Kategorija: { naziv: 'string:50' }
+    Clan: { ime: 'string:30', prezime: 'string:30', godina_rodjenja: date, fide_rejting: float, kategorija_id: 'id foreign:Kategorija' }
+    Trener: { ime: 'string:30', prezime: 'string:30', broj_telefona: 'string:17', jmbg: 'string:13' }
+    Lekcija: { naziv: 'string:50', deo_partije: text }

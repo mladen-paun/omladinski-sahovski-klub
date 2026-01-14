@@ -1,0 +1,33 @@
+models:
+  Kategorija:
+    naziv: string:50
+
+  Clan:
+    ime: string:30
+    prezime: string:30
+    godina_rodjenja: date
+    fide_rejting: float
+    kategorija_id: id foreign:Kategorija
+
+  Trener:
+    ime: string:30
+    prezime: string:30
+    broj_telefona: string:17
+    jmbg: string:13
+
+  Lekcija:
+    naziv: string:50
+    deo_partije: text
+
+controllers:
+  Kategorija:
+    resource
+
+  Clan:
+    resource
+  
+  Trener:
+    resource
+
+  Lekcija:
+    resource
