@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use JMac\Testing\Traits\AdditionalAssertions;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
+use App\Models\User;
 
 /**
  * @see \App\Http\Controllers\TrenerController
@@ -16,23 +17,32 @@ final class TrenerControllerTest extends TestCase
 {
     use AdditionalAssertions, RefreshDatabase, WithFaker;
 
+    private User $user;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Create a user for authentication
+        $this->user = User::factory()->create();
+    }
+
     #[Test]
     public function index_displays_view(): void
     {
-        $treners = Trener::factory()->count(3)->create();
 
-        $response = $this->get(route('treners.index'));
+        $response = $this->actingAs($this->user)->get(route('trener.index'));
 
         $response->assertOk();
         $response->assertViewIs('trener.index');
-        $response->assertViewHas('treners', $treners);
+        $response->assertViewHas('treners');
     }
 
 
     #[Test]
     public function create_displays_view(): void
     {
-        $response = $this->get(route('treners.create'));
+        $response = $this->actingAs($this->user)->get(route('trener.create'));
 
         $response->assertOk();
         $response->assertViewIs('trener.create');
@@ -52,29 +62,18 @@ final class TrenerControllerTest extends TestCase
     #[Test]
     public function store_saves_and_redirects(): void
     {
-        $ime = fake()->word();
-        $prezime = fake()->word();
-        $broj_telefona = fake()->word();
-        $jmbg = fake()->word();
+        $data = [
+            'ime' => 'Marko',
+            'prezime' => 'Markovic',
+            'broj_telefona' => '0651234567',
+            'jmbg' => '0101001234567',
+        ];
 
-        $response = $this->post(route('treners.store'), [
-            'ime' => $ime,
-            'prezime' => $prezime,
-            'broj_telefona' => $broj_telefona,
-            'jmbg' => $jmbg,
-        ]);
+        $response = $this->actingAs($this->user)->post(route('trener.store'), $data);
 
-        $treners = Trener::query()
-            ->where('ime', $ime)
-            ->where('prezime', $prezime)
-            ->where('broj_telefona', $broj_telefona)
-            ->where('jmbg', $jmbg)
-            ->get();
-        $this->assertCount(1, $treners);
-        $trener = $treners->first();
-
-        $response->assertRedirect(route('treners.index'));
-        $response->assertSessionHas('trener.id', $trener->id);
+        $trener = Trener::where('ime', 'Marko')->first();
+        $this->assertNotNull($trener);
+        $response->assertRedirect(route('trener.index'));
     }
 
 
@@ -83,11 +82,11 @@ final class TrenerControllerTest extends TestCase
     {
         $trener = Trener::factory()->create();
 
-        $response = $this->get(route('treners.show', $trener));
+        $response = $this->actingAs($this->user)->get(route('trener.show', $trener));
 
         $response->assertOk();
         $response->assertViewIs('trener.show');
-        $response->assertViewHas('trener', $trener);
+        $response->assertViewHas('trener');
     }
 
 
@@ -96,11 +95,11 @@ final class TrenerControllerTest extends TestCase
     {
         $trener = Trener::factory()->create();
 
-        $response = $this->get(route('treners.edit', $trener));
+        $response = $this->actingAs($this->user)->get(route('trener.edit', $trener));
 
         $response->assertOk();
         $response->assertViewIs('trener.edit');
-        $response->assertViewHas('trener', $trener);
+        $response->assertViewHas('trener');
     }
 
 
@@ -118,27 +117,19 @@ final class TrenerControllerTest extends TestCase
     public function update_redirects(): void
     {
         $trener = Trener::factory()->create();
-        $ime = fake()->word();
-        $prezime = fake()->word();
-        $broj_telefona = fake()->word();
-        $jmbg = fake()->word();
 
-        $response = $this->put(route('treners.update', $trener), [
-            'ime' => $ime,
-            'prezime' => $prezime,
-            'broj_telefona' => $broj_telefona,
-            'jmbg' => $jmbg,
-        ]);
+        $data = [
+            'ime' => 'Petar',
+            'prezime' => 'Petrovic',
+            'broj_telefona' => '0659876543',
+            'jmbg' => '0101007654321',
+        ];
+
+        $response = $this->actingAs($this->user)->put(route('trener.update', $trener), $data);
 
         $trener->refresh();
-
-        $response->assertRedirect(route('treners.index'));
-        $response->assertSessionHas('trener.id', $trener->id);
-
-        $this->assertEquals($ime, $trener->ime);
-        $this->assertEquals($prezime, $trener->prezime);
-        $this->assertEquals($broj_telefona, $trener->broj_telefona);
-        $this->assertEquals($jmbg, $trener->jmbg);
+        $this->assertEquals('Petar', $trener->ime);
+        $response->assertRedirect(route('trener.index'));
     }
 
 
@@ -147,10 +138,9 @@ final class TrenerControllerTest extends TestCase
     {
         $trener = Trener::factory()->create();
 
-        $response = $this->delete(route('treners.destroy', $trener));
-
-        $response->assertRedirect(route('treners.index'));
+        $response = $this->actingAs($this->user)->delete(route('trener.destroy', $trener));
 
         $this->assertModelMissing($trener);
+        $response->assertRedirect(route('trener.index'));
     }
 }

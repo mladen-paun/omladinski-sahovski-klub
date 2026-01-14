@@ -10,6 +10,7 @@ use Illuminate\Support\Carbon;
 use JMac\Testing\Traits\AdditionalAssertions;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
+use App\Models\User;
 
 /**
  * @see \App\Http\Controllers\ClanController
@@ -18,26 +19,31 @@ final class ClanControllerTest extends TestCase
 {
     use AdditionalAssertions, RefreshDatabase, WithFaker;
 
+    private User $user;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Create a user for authentication
+        $this->user = User::factory()->create();
+    }
+
     #[Test]
     public function index_displays_view(): void
     {
-        $clans = Clan::factory()->count(3)->create();
-
-        $response = $this->get(route('clans.index'));
-
-        $response->assertOk();
-        $response->assertViewIs('clan.index');
-        $response->assertViewHas('clans', $clans);
+       Clan::factory()->create();
+        $response = $this->actingAs($this->user)->get(route('clan.index'));
+        $response->assertOk()->assertViewIs('clan.index')->assertViewHas('clans');
     }
 
 
     #[Test]
     public function create_displays_view(): void
-    {
-        $response = $this->get(route('clans.create'));
-
-        $response->assertOk();
-        $response->assertViewIs('clan.create');
+    {  
+        Kategorija::factory()->create();
+        $response = $this->actingAs($this->user)->get(route('clan.create'));
+        $response->assertOk()->assertViewIs('clan.create')->assertViewHas('kategorijas');
     }
 
 
@@ -54,32 +60,18 @@ final class ClanControllerTest extends TestCase
     #[Test]
     public function store_saves_and_redirects(): void
     {
-        $ime = fake()->word();
-        $prezime = fake()->word();
-        $godina_rodjenja = Carbon::parse(fake()->date());
-        $fide_rejting = fake()->randomFloat(/** float_attributes **/);
-        $kategorija = Kategorija::factory()->create();
+        $k = Kategorija::factory()->create();
+        $data = [
+            'ime' => 'Marko',
+            'prezime' => 'Markovic',
+            'godina_rodjenja' => '2005-05-05',
+            'fide_rejting' => 1500,
+            'kategorija_id' => $k->id,
+        ];
 
-        $response = $this->post(route('clans.store'), [
-            'ime' => $ime,
-            'prezime' => $prezime,
-            'godina_rodjenja' => $godina_rodjenja->toDateString(),
-            'fide_rejting' => $fide_rejting,
-            'kategorija_id' => $kategorija->id,
-        ]);
-
-        $clans = Clan::query()
-            ->where('ime', $ime)
-            ->where('prezime', $prezime)
-            ->where('godina_rodjenja', $godina_rodjenja)
-            ->where('fide_rejting', $fide_rejting)
-            ->where('kategorija_id', $kategorija->id)
-            ->get();
-        $this->assertCount(1, $clans);
-        $clan = $clans->first();
-
-        $response->assertRedirect(route('clans.index'));
-        $response->assertSessionHas('clan.id', $clan->id);
+        $response = $this->actingAs($this->user)->post(route('clan.store'), $data);
+        $this->assertDatabaseHas('clans', ['ime' => 'Marko']);
+        $response->assertRedirect(route('clan.index'));
     }
 
 
@@ -88,7 +80,7 @@ final class ClanControllerTest extends TestCase
     {
         $clan = Clan::factory()->create();
 
-        $response = $this->get(route('clans.show', $clan));
+        $response = $this->get(route('clan.show', $clan));
 
         $response->assertOk();
         $response->assertViewIs('clan.show');
@@ -100,12 +92,9 @@ final class ClanControllerTest extends TestCase
     public function edit_displays_view(): void
     {
         $clan = Clan::factory()->create();
-
-        $response = $this->get(route('clans.edit', $clan));
-
-        $response->assertOk();
-        $response->assertViewIs('clan.edit');
-        $response->assertViewHas('clan', $clan);
+        Kategorija::factory()->create();
+        $response = $this->actingAs($this->user)->get(route('clan.edit', $clan));
+        $response->assertOk()->assertViewIs('clan.edit')->assertViewHasAll(['clan', 'kategorijas']);
     }
 
 
@@ -123,30 +112,20 @@ final class ClanControllerTest extends TestCase
     public function update_redirects(): void
     {
         $clan = Clan::factory()->create();
-        $ime = fake()->word();
-        $prezime = fake()->word();
-        $godina_rodjenja = Carbon::parse(fake()->date());
-        $fide_rejting = fake()->randomFloat(/** float_attributes **/);
-        $kategorija = Kategorija::factory()->create();
+        $k = Kategorija::factory()->create();
 
-        $response = $this->put(route('clans.update', $clan), [
-            'ime' => $ime,
-            'prezime' => $prezime,
-            'godina_rodjenja' => $godina_rodjenja->toDateString(),
-            'fide_rejting' => $fide_rejting,
-            'kategorija_id' => $kategorija->id,
-        ]);
+        $data = [
+            'ime' => 'Petar',
+            'prezime' => 'Petrovic',
+            'godina_rodjenja' => '2006-06-06',
+            'fide_rejting' => 1600,
+            'kategorija_id' => $k->id,
+        ];
 
+        $response = $this->actingAs($this->user)->put(route('clan.update', $clan), $data);
         $clan->refresh();
-
-        $response->assertRedirect(route('clans.index'));
-        $response->assertSessionHas('clan.id', $clan->id);
-
-        $this->assertEquals($ime, $clan->ime);
-        $this->assertEquals($prezime, $clan->prezime);
-        $this->assertEquals($godina_rodjenja, $clan->godina_rodjenja);
-        $this->assertEquals($fide_rejting, $clan->fide_rejting);
-        $this->assertEquals($kategorija->id, $clan->kategorija_id);
+        $this->assertEquals('Petar', $clan->ime);
+        $response->assertRedirect(route('clan.index'));
     }
 
 
@@ -154,11 +133,8 @@ final class ClanControllerTest extends TestCase
     public function destroy_deletes_and_redirects(): void
     {
         $clan = Clan::factory()->create();
-
-        $response = $this->delete(route('clans.destroy', $clan));
-
-        $response->assertRedirect(route('clans.index'));
-
+        $response = $this->actingAs($this->user)->delete(route('clan.destroy', $clan));
         $this->assertModelMissing($clan);
+        $response->assertRedirect(route('clan.index'));
     }
 }

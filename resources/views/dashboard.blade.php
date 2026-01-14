@@ -1,17 +1,51 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+<!-- resources/views/dashboard.blade.php -->
+@extends('layouts.public')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    {{ __("You're logged in!") }}
+@section('content')
+<div class="container py-5">
+    <h1 class="mb-4">Dashboard</h1>
+    <p class="lead">Quick access to all sections:</p>
+
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <h5 class="card-title">Treneri</h5>
+                    <p class="card-text">Manage all trainers.</p>
+                    <a href="{{ route('trener.index') }}" class="btn btn-primary mt-auto">Go</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <h5 class="card-title">Clanovi</h5>
+                    <p class="card-text">Manage all members.</p>
+                    <a href="{{ route('clan.index') }}" class="btn btn-primary mt-auto">Go</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <h5 class="card-title">Kategorije</h5>
+                    <p class="card-text">Manage all categories.</p>
+                    <a href="{{ route('kategorija.index') }}" class="btn btn-primary mt-auto">Go</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <h5 class="card-title">Lekcije</h5>
+                    <p class="card-text">Manage all lessons.</p>
+                    <a href="{{ route('lekcija.index') }}" class="btn btn-primary mt-auto">Go</a>
                 </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+</div>
+@endsection

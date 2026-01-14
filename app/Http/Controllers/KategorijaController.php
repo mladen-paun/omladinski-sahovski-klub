@@ -31,7 +31,7 @@ class KategorijaController extends Controller
 
         $request->session()->flash('kategorija.id', $kategorija->id);
 
-        return redirect()->route('kategorijas.index');
+        return redirect()->route('kategorija.index');
     }
 
     public function show(Request $request, Kategorija $kategorija)

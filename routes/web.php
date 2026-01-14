@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TrenerController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,10 +17,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('kategorijas', App\Http\Controllers\KategorijaController::class);
-    Route::resource('clans', App\Http\Controllers\ClanController::class);
-    Route::resource('treners', App\Http\Controllers\TrenerController::class);
-    Route::resource('lekcijas', App\Http\Controllers\LekcijaController::class);
+    Route::resource('kategorija', App\Http\Controllers\KategorijaController::class);
+    Route::resource('clan', App\Http\Controllers\ClanController::class);
+    Route::resource('trener', App\Http\Controllers\TrenerController::class);
+    Route::resource('lekcija', App\Http\Controllers\LekcijaController::class);
 
 });
 

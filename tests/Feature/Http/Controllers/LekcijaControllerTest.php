@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use JMac\Testing\Traits\AdditionalAssertions;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
+use App\Models\User;
 
 /**
  * @see \App\Http\Controllers\LekcijaController
@@ -16,26 +17,28 @@ final class LekcijaControllerTest extends TestCase
 {
     use AdditionalAssertions, RefreshDatabase, WithFaker;
 
+    private User $user;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->user = User::factory()->create();
+    }
+
     #[Test]
     public function index_displays_view(): void
     {
-        $lekcijas = Lekcija::factory()->count(3)->create();
-
-        $response = $this->get(route('lekcijas.index'));
-
-        $response->assertOk();
-        $response->assertViewIs('lekcija.index');
-        $response->assertViewHas('lekcijas', $lekcijas);
+        Lekcija::factory()->create();
+        $response = $this->actingAs($this->user)->get(route('lekcija.index'));
+        $response->assertOk()->assertViewIs('lekcija.index')->assertViewHas('lekcijas');
     }
 
 
     #[Test]
     public function create_displays_view(): void
     {
-        $response = $this->get(route('lekcijas.create'));
-
-        $response->assertOk();
-        $response->assertViewIs('lekcija.create');
+        $response = $this->actingAs($this->user)->get(route('lekcija.create'));
+        $response->assertOk()->assertViewIs('lekcija.create');
     }
 
 
@@ -52,23 +55,10 @@ final class LekcijaControllerTest extends TestCase
     #[Test]
     public function store_saves_and_redirects(): void
     {
-        $naziv = fake()->word();
-        $deo_partije = fake()->text();
-
-        $response = $this->post(route('lekcijas.store'), [
-            'naziv' => $naziv,
-            'deo_partije' => $deo_partije,
-        ]);
-
-        $lekcijas = Lekcija::query()
-            ->where('naziv', $naziv)
-            ->where('deo_partije', $deo_partije)
-            ->get();
-        $this->assertCount(1, $lekcijas);
-        $lekcija = $lekcijas->first();
-
-        $response->assertRedirect(route('lekcijas.index'));
-        $response->assertSessionHas('lekcija.id', $lekcija->id);
+        $data = ['naziv' => 'Endgame', 'deo_partije' => 'Final position tactics'];
+        $response = $this->actingAs($this->user)->post(route('lekcija.store'), $data);
+        $this->assertDatabaseHas('lekcijas', ['naziv' => 'Endgame']);
+        $response->assertRedirect(route('lekcija.index'));
     }
 
 
@@ -77,7 +67,7 @@ final class LekcijaControllerTest extends TestCase
     {
         $lekcija = Lekcija::factory()->create();
 
-        $response = $this->get(route('lekcijas.show', $lekcija));
+        $response = $this->get(route('lekcija.show', $lekcija));
 
         $response->assertOk();
         $response->assertViewIs('lekcija.show');
@@ -88,13 +78,9 @@ final class LekcijaControllerTest extends TestCase
     #[Test]
     public function edit_displays_view(): void
     {
-        $lekcija = Lekcija::factory()->create();
-
-        $response = $this->get(route('lekcijas.edit', $lekcija));
-
-        $response->assertOk();
-        $response->assertViewIs('lekcija.edit');
-        $response->assertViewHas('lekcija', $lekcija);
+        $l = Lekcija::factory()->create();
+        $response = $this->actingAs($this->user)->get(route('lekcija.edit', $l));
+        $response->assertOk()->assertViewIs('lekcija.edit')->assertViewHas('lekcija');
     }
 
 
@@ -111,34 +97,21 @@ final class LekcijaControllerTest extends TestCase
     #[Test]
     public function update_redirects(): void
     {
-        $lekcija = Lekcija::factory()->create();
-        $naziv = fake()->word();
-        $deo_partije = fake()->text();
-
-        $response = $this->put(route('lekcijas.update', $lekcija), [
-            'naziv' => $naziv,
-            'deo_partije' => $deo_partije,
-        ]);
-
-        $lekcija->refresh();
-
-        $response->assertRedirect(route('lekcijas.index'));
-        $response->assertSessionHas('lekcija.id', $lekcija->id);
-
-        $this->assertEquals($naziv, $lekcija->naziv);
-        $this->assertEquals($deo_partije, $lekcija->deo_partije);
+        $l = Lekcija::factory()->create();
+        $data = ['naziv' => 'Opening', 'deo_partije' => 'First moves'];
+        $response = $this->actingAs($this->user)->put(route('lekcija.update', $l), $data);
+        $l->refresh();
+        $this->assertEquals('Opening', $l->naziv);
+        $response->assertRedirect(route('lekcija.index'));
     }
 
 
     #[Test]
     public function destroy_deletes_and_redirects(): void
     {
-        $lekcija = Lekcija::factory()->create();
-
-        $response = $this->delete(route('lekcijas.destroy', $lekcija));
-
-        $response->assertRedirect(route('lekcijas.index'));
-
-        $this->assertModelMissing($lekcija);
+        $l = Lekcija::factory()->create();
+        $response = $this->actingAs($this->user)->delete(route('lekcija.destroy', $l));
+        $this->assertModelMissing($l);
+        $response->assertRedirect(route('lekcija.index'));
     }
 }

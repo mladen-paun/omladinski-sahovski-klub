@@ -31,7 +31,7 @@ class TrenerController extends Controller
 
         $request->session()->flash('trener.id', $trener->id);
 
-        return redirect()->route('treners.index');
+        return redirect()->route('trener.index');
     }
 
     public function show(Request $request, Trener $trener)
@@ -54,13 +54,13 @@ class TrenerController extends Controller
 
         $request->session()->flash('trener.id', $trener->id);
 
-        return redirect()->route('treners.index');
+        return redirect()->route('trener.index');
     }
 
     public function destroy(Request $request, Trener $trener)
     {
         $trener->delete();
 
-        return redirect()->route('treners.index');
+        return redirect()->route('trener.index');
     }
 }

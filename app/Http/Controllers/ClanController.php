@@ -31,7 +31,7 @@ class ClanController extends Controller
 
         $request->session()->flash('clan.id', $clan->id);
 
-        return redirect()->route('clans.index');
+        return redirect()->route('clan.index');
     }
 
     public function show(Request $request, Clan $clan)

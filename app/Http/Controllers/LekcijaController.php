@@ -31,7 +31,7 @@ class LekcijaController extends Controller
 
         $request->session()->flash('lekcija.id', $lekcija->id);
 
-        return redirect()->route('lekcijas.index');
+        return redirect()->route('lekcija.index');
     }
 
     public function show(Request $request, Lekcija $lekcija)
