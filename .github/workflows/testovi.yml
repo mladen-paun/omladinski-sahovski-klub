@@ -54,8 +54,5 @@ jobs:
             sleep 2
           done
 
-      - name: Run migrations
-        run: php artisan migrate --force
-
       - name: Run feature tests
         run: php artisan test
