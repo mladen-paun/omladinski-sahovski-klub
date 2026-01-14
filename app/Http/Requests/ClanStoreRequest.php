@@ -24,7 +24,7 @@ class ClanStoreRequest extends FormRequest
             'prezime' => ['required', 'string', 'max:30'],
             'godina_rodjenja' => ['required', 'date'],
             'fide_rejting' => ['required', 'numeric'],
-            'kategorija_id' => ['required', 'integer', 'exists:Kategorija,id'],
+            'kategorija_id' => ['required', 'integer', 'exists:Kategorijas,id'],
         ];
     }
 }

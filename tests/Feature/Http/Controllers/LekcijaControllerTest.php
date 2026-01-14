@@ -66,12 +66,8 @@ final class LekcijaControllerTest extends TestCase
     public function show_displays_view(): void
     {
         $lekcija = Lekcija::factory()->create();
-
-        $response = $this->get(route('lekcija.show', $lekcija));
-
-        $response->assertOk();
-        $response->assertViewIs('lekcija.show');
-        $response->assertViewHas('lekcija', $lekcija);
+        $response = $this->actingAs($this->user)->get(route('lekcija.show', $lekcija));
+        $response->assertOk()->assertViewIs('lekcija.show')->assertViewHas('lekcija');
     }
 
 
