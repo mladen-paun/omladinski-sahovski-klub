@@ -54,13 +54,13 @@ class LekcijaController extends Controller
 
         $request->session()->flash('lekcija.id', $lekcija->id);
 
-        return redirect()->route('lekcija.index');
+        return redirect()->route('lekcijas.index');
     }
 
     public function destroy(Request $request, Lekcija $lekcija)
     {
         $lekcija->delete();
 
-        return redirect()->route('lekcija.index');
+        return redirect()->route('lekcijas.index');
     }
 }

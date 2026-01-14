@@ -54,13 +54,13 @@ class KategorijaController extends Controller
 
         $request->session()->flash('kategorija.id', $kategorija->id);
 
-        return redirect()->route('kategorija.index');
+        return redirect()->route('kategorijas.index');
     }
 
     public function destroy(Request $request, Kategorija $kategorija)
     {
         $kategorija->delete();
 
-        return redirect()->route('kategorija.index');
+        return redirect()->route('kategorijas.index');
     }
 }

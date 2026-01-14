@@ -8,7 +8,6 @@ use App\Models\Clan;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use App\Models\Kategorija;
 
 class ClanController extends Controller
 {
@@ -23,11 +22,7 @@ class ClanController extends Controller
 
     public function create(Request $request)
     {
-        $kategorijas = Kategorija::all();
-
-        return view('clan.create', [
-            'kategorijas' => $kategorijas,
-        ]);
+        return view('clan.create');
     }
 
     public function store(ClanStoreRequest $request)
@@ -48,11 +43,8 @@ class ClanController extends Controller
 
     public function edit(Request $request, Clan $clan)
     {
-        $kategorijas = Kategorija::all();
-
         return view('clan.edit', [
             'clan' => $clan,
-            'kategorijas' => $kategorijas,
         ]);
     }
 
@@ -62,13 +54,13 @@ class ClanController extends Controller
 
         $request->session()->flash('clan.id', $clan->id);
 
-        return redirect()->route('clan.index');
+        return redirect()->route('clans.index');
     }
 
     public function destroy(Request $request, Clan $clan)
     {
         $clan->delete();
 
-        return redirect()->route('clan.index');
+        return redirect()->route('clans.index');
     }
 }

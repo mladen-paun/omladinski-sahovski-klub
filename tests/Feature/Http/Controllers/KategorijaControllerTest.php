@@ -67,7 +67,7 @@ final class KategorijaControllerTest extends TestCase
     {
         $kategorija = Kategorija::factory()->create();
 
-        $response = $this->actingAs($this->user)->get(route('kategorija.show', $kategorija));
+        $response = $this->get(route('kategorija.show', $kategorija));
 
         $response->assertOk();
         $response->assertViewIs('kategorija.show');
