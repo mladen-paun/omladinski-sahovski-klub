@@ -70,7 +70,7 @@ final class ClanControllerTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->post(route('clan.store'), $data);
-        $this->assertDatabaseHas('clans', ['ime' => 'Marko']);
+        $this->assertDatabaseHas('clans', ['ime' => 'Marko']); // ✅ will pass
         $response->assertRedirect(route('clan.index'));
     }
 
@@ -80,7 +80,7 @@ final class ClanControllerTest extends TestCase
     {
         $clan = Clan::factory()->create();
 
-        $response = $this->get(route('clan.show', $clan));
+        $response = $this->actingAs($this->user)->get(route('clan.show', $clan));
 
         $response->assertOk();
         $response->assertViewIs('clan.show');
@@ -121,8 +121,10 @@ final class ClanControllerTest extends TestCase
             'fide_rejting' => 1600,
             'kategorija_id' => $k->id,
         ];
+        print_r($data);
 
         $response = $this->actingAs($this->user)->put(route('clan.update', $clan), $data);
+
         $clan->refresh();
         $this->assertEquals('Petar', $clan->ime);
         $response->assertRedirect(route('clan.index'));

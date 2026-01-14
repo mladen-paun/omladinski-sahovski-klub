@@ -29,7 +29,7 @@
 
             <!-- Page Content -->
             <main>
-                {{ $yield }}
+                {{ $slot}}
             </main>
         </div>
     </body>
