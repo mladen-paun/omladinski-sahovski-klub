@@ -121,7 +121,6 @@ final class ClanControllerTest extends TestCase
             'fide_rejting' => 1600,
             'kategorija_id' => $k->id,
         ];
-        print_r($data);
 
         $response = $this->actingAs($this->user)->put(route('clan.update', $clan), $data);
 
